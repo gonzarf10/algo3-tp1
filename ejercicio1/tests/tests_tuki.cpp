@@ -151,7 +151,7 @@ TEST(tests_tuki, 11) {
 
     senderoRes res = sendero(t);
     ASSERT_TRUE(res.existeCamino);
-    ASSERT_EQ(res.max, 14);
+    ASSERT_EQ(res.max, 24);
     ASSERT_EQ(res.min, 10);
 }
 
@@ -167,8 +167,8 @@ TEST(tests_tuki, 12) {
 
     senderoRes res = sendero(t);
     ASSERT_TRUE(res.existeCamino);
-    ASSERT_EQ(res.max, 14);
-    ASSERT_EQ(res.min, 10);
+    ASSERT_EQ(res.max, 22);
+    ASSERT_EQ(res.min, 20);
 }
 
 TEST(tests_tuki, finalBloqueado) {

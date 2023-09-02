@@ -136,14 +136,14 @@ senderoRes senderoBT(posicion anterior, posicion actual, tablero t, vector<posic
         };
     }
 
-    if (existeCamino) {
+   /* if (existeCamino) {
         //cout << "debug" << endl;
         cout << "[";
         for (auto pos:posicionesRecorridas) {
             cout << "("<<pos.first<<","<<pos.second<<") ";
         }
         cout << "]"<<endl;
-    }
+    }*/
 
     if (maximo == 23) {
         //cout << "debug 23" << endl;
