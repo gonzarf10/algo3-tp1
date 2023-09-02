@@ -168,7 +168,18 @@ TEST(tests_tuki, 12) {
     senderoRes res = sendero(t);
     ASSERT_TRUE(res.existeCamino);
     ASSERT_EQ(res.max, 22);
-    ASSERT_EQ(res.min, 20);
+    ASSERT_EQ(res.min, 10);
+}
+
+TEST(tests_tuki, 13) {
+    tablero t = {
+            {"L", "+", "+", "+", "+", "L"},
+    };
+
+    senderoRes res = sendero(t);
+    ASSERT_TRUE(res.existeCamino);
+    ASSERT_EQ(res.max, 5);
+    ASSERT_EQ(res.min, 5);
 }
 
 TEST(tests_tuki, finalBloqueado) {
@@ -188,6 +199,15 @@ TEST(tests_tuki, inicioBloqueado) {
             {"#", "+"},
             {"+", "+"}
     };
+
+    senderoRes res = sendero(t);
+    ASSERT_FALSE(res.existeCamino);
+    ASSERT_EQ(res.max, 0);
+    ASSERT_EQ(res.min, 0);
+}
+
+TEST(tests_tuki, vacio) {
+    tablero t = {};
 
     senderoRes res = sendero(t);
     ASSERT_FALSE(res.existeCamino);

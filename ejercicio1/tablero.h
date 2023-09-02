@@ -24,7 +24,6 @@ struct senderoRes {
     int min;
     int max;
     bool existeCamino;
-    vector<posicion> caminoRecorrido;
 };
 
 

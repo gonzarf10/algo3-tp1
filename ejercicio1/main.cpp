@@ -46,11 +46,8 @@ int obtenerDireccionDeLaQueVengo(posicion anterior, posicion actual) {
         return ARRIBA;
 }
 
-senderoRes senderoBT(posicion anterior, posicion actual, tablero t, vector<posicion> posicionesRecorridas) {
-    if (find(posicionesRecorridas.begin(), posicionesRecorridas.end(), actual) != posicionesRecorridas.end()) {
-        return {.min =  0, .max =  0, .existeCamino =  false};
-
-    } else if (estoyFueraDeTablero(actual, t)) {
+senderoRes senderoBT(posicion anterior, posicion actual, tablero t) {
+    if (estoyFueraDeTablero(actual, t)) {
         return {.min= 0, .max= 0, .existeCamino= false};
     }
 
@@ -60,7 +57,6 @@ senderoRes senderoBT(posicion anterior, posicion actual, tablero t, vector<posic
         return {.min= 0, .max= 0, .existeCamino= true};
     }
 
-    posicionesRecorridas.push_back(actual);
 
     int direccionDeLaQueVengo = obtenerDireccionDeLaQueVengo(anterior, actual);
     vector<senderoRes> caminos;
@@ -115,38 +111,52 @@ senderoRes senderoBT(posicion anterior, posicion actual, tablero t, vector<posic
         }
     }
 
-    for (posicion posicionARecorrer: posicionesARecorrer) {
-        senderoRes camino = senderoBT(actual, posicionARecorrer, t, posicionesRecorridas);
+    // Dejo el espacio bloqueado para que no se pueda volver a pasar por acá
+    t[actual.second][actual.first] = "#";
 
-        if (camino.existeCamino) {
-            caminos.push_back(camino);
-        }
-    }
-
+    auto posARecorrer = posicionesARecorrer.begin();
+    senderoRes camino = senderoBT(actual, *posARecorrer, t);
     int minimo = -1;
     int maximo = -1;
-    bool existeCamino = !caminos.empty();
 
-    for (auto camino: caminos) {
-        if (minimo == -1) {
-            minimo = camino.min;
-        } else {
-            minimo = min(minimo, camino.min);
+    if(camino.existeCamino) {
+        minimo = camino.min;
+        maximo = camino.max;
+    }
+
+    bool existeCamino = camino.existeCamino;
+    int n = t.size();
+    int m = t[0].size();
+
+    posARecorrer++;
+
+    while (posARecorrer != posicionesARecorrer.end() && minimo != m + n - 2 && maximo != n * m - 1) {
+        camino = senderoBT(actual, *posARecorrer, t);
+        existeCamino = camino.existeCamino || existeCamino;
+
+        if (camino.existeCamino) {
+            if (minimo == -1) {
+                minimo = camino.min;
+            } else {
+                minimo = min(minimo, camino.min);
+            }
+
+            if (maximo == -1) {
+                maximo = camino.max;
+            } else {
+                maximo = max(maximo, camino.max);
+            };
         }
 
-        if (maximo == -1) {
-            maximo = camino.max;
-        } else {
-            maximo = max(maximo, camino.max);
-        };
+        posARecorrer++;
     }
 
     return {.min =  minimo + 1, .max =  maximo + 1, .existeCamino =  existeCamino};
 }
 
 senderoRes sendero(const tablero &t) {
-    senderoRes sen1 = senderoBT(make_pair(-1, 0), make_pair(0, 0), t, {});
-    senderoRes sen2 = senderoBT(make_pair(0, -1), make_pair(0, 0), t, {});
+    senderoRes sen1 = senderoBT(make_pair(-1, 0), make_pair(0, 0), t);
+    senderoRes sen2 = senderoBT(make_pair(0, -1), make_pair(0, 0), t);
 
     if (!sen1.existeCamino && sen2.existeCamino) {
         return sen2;
@@ -175,7 +185,7 @@ void mostrarTablero(tablero t) {
 tablero pedirTablero() {
     posicion dimension;
 
-    cin >> dimension.first >> dimension.second;
+    cin >> dimension.second >> dimension.first;
 
     tablero t = {};
     for (int j = 0; j < dimension.second; ++j) {
@@ -280,7 +290,6 @@ void pedirInfinitosTableros() {
 
 int main() {
     pedirTablerosYAnalizar();
-
 
     return 0;
 }
