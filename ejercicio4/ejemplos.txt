@@ -1,0 +1,76 @@
+vector<tablero> tableros = {
+            /*{
+                    {"#", "#"},
+                    {"#", "#"}
+            },
+            {
+                    {"+", "+"},
+                    {"+", "+"}
+            },
+            {
+                    {"+", "#"},
+                    {"+", "+"}
+            },
+            {
+                    {"L", "#"},
+                    {"L", "I"}
+            },
+            {
+                    {"L", "+", "L"},
+                    {"+", "L", "I"},
+                    {"L", "+", "+"}
+            },
+            {
+                    {"L", "+", "+"},
+                    {"+", "+", "+"},
+                    {"+", "+", "+"}
+            },
+            {
+                    {"L", "+", "+"},
+                    {"+", "#", "#"},
+                    {"+", "#", "+"}
+            },
+             {
+                    {"+", "I", "I"},
+                    {"L", "I", "L"},
+                    {"L", "I", "I"}
+            }
+             */
+            {
+                    {"+", "+", "+", "+"},
+                    {"L", "L", "L", "+"}
+            }
+    };
+
+    vector<tablero> tableros = {
+                {
+                        {"I", "L", "I"},
+                        {"#", "I", "L"},
+                        {"+", "L", "+"}
+                },
+                {
+                        {"+", "#"},
+                        {"#", "L"}
+                },
+                {
+                        {"L", "I", "+", "L"},
+                        {"+", "+", "I", "L"},
+                        {"I", "#", "+", "#"},
+                        {"L", "I", "+", "+"}
+                }
+        };
+        int cantidadTableros = tableros.size();
+
+
+        for (int i = 0; i < cantidadTableros; ++i) {
+            senderoRes solucion = sendero(tableros[i]);
+
+            if (solucion.existeCamino) {
+                cout << "POSIBLE " << solucion.min << " " << solucion.max << endl;
+            } else {
+                cout << "IMPOSIBLE" << endl;
+            }
+
+        }
+
+        return 0;
