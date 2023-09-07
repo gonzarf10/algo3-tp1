@@ -23,6 +23,8 @@ struct choripanesRes {
 
 vector<vector<int>> conjuntoDePartes(int i, vector<int> n, int k);
 
+vector<vector<int>> conjuntoDePartesNUtil(vector<int> n, int k, int i);
+
 vector<vector<int>> conjuntoDePartesN(vector<int> n, int k);
 
 int coste(ubicaciones &puestos, ubicaciones &proveedurias);

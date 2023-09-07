@@ -56,7 +56,7 @@ vector<vector<int>> conjuntoDePartesN(vector<int> n, int k) {
     }
 
     return res;
-};
+}
 
 choripanesRes choripanes(ubicaciones puestos, int cantProveedurias) {
     vector<vector<int>> proveedurias = conjuntoDePartesN(puestos, cantProveedurias);
