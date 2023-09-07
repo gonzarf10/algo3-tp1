@@ -38,7 +38,8 @@ vector<vector<int>> conjuntoDePartes(int i, vector<int> n, int k) {
     res1 = res;
 
     for (auto conj: res) {
-        conj.insert(conj.begin(), n[i]);
+        //conj.insert(conj.begin(), n[i]);
+        conj.push_back(n[n.size() - i - 1]);
         res1.push_back(conj);
     }
 

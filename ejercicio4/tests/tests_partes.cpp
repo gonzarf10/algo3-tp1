@@ -46,8 +46,8 @@ TEST(tests_partes, conjuntoDePartes1) {
     vector<vector<int>> res = conjuntoDePartesN(conjunto, k);
 
     vector<vector<int>> resExpected = {
-            {2},
             {1},
+            {2},
     };
 
     ASSERT_EQ(res, resExpected);
@@ -59,12 +59,12 @@ TEST(tests_partes, conjuntoDePartes2) {
     vector<vector<int>> res = conjuntoDePartesN(conjunto, k);
 
     vector<vector<int>> resExpected = {
-            {15, 20},
-            {5,  20},
+            {1,  5},
+            {1,  15},
             {5,  15},
             {1,  20},
-            {1,  15},
-            {1,  5},
+            {5,  20},
+            {15, 20},
     };
 
     ASSERT_EQ(res, resExpected);
@@ -76,10 +76,10 @@ TEST(tests_partes, conjuntoDePartes3) {
     vector<vector<int>> res = conjuntoDePartesN(conjunto, k);
 
     vector<vector<int>> resExpected = {
-            {5, 15, 20},
-            {1, 15, 20},
-            {1, 5,  20},
             {1, 5,  15},
+            {1, 5,  20},
+            {1, 15, 20},
+            {5, 15, 20},
     };
 
     ASSERT_EQ(res, resExpected);
