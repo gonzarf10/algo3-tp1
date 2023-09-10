@@ -1,15 +1,18 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <cmath>
+#include <limits>
 
 using namespace std;
 
 using ubicacion = int;
 using ubicaciones = vector<int>;
-
 struct choripanesRes {
     int coste;
     ubicaciones proveedurias;
 };
+using memo = vector<vector<vector<choripanesRes>>>;
 
 ubicacion proveeduriaMasCercana(ubicacion puesto, ubicaciones proveedurias) {
     pair<int, int> res = make_pair(proveedurias[0], abs(proveedurias[0] - puesto));
@@ -36,55 +39,101 @@ int coste(ubicaciones &puestos, ubicaciones &proveedurias) {
     return res;
 };
 
-vector<vector<int>> conjuntoDePartes(int i, vector<int> n, int k) {
-    if (k == 0 or i == n.size()) {
-        return {{}};
-    }
-    vector<vector<int>> res, res1;
-    res = conjuntoDePartes(i + 1, n, k - 1);
-    res1 = res;
+choripanesRes choripanesV3(ubicaciones &puestos, int k, int begin, int end, memo &memory) {
 
-    for (auto conj: res) {
-        conj.insert(conj.begin(), n[i]);
-        res1.push_back(conj);
+    if (memory[begin][end][k].coste != -1) {
+        //cout << "HIT --> R(" << end - begin + 1 << ", " << k << ")" << endl;
+
+        return memory[begin][end][k];
+    } else {
+        //cout << "MISS --> R(" << end - begin + 1 << ", " << k << ")" << endl;
     }
 
-    return res1;
-};
 
-vector<vector<int>> conjuntoDePartesN(vector<int> n, int k) {
-    vector<vector<int>> cp = conjuntoDePartes(0, n, n.size());
+    if (end < begin) {
+        choripanesRes res = {.coste = 0, .proveedurias = {}};
+        memory[begin][end][k] = res;
 
-    vector<vector<int>> res = {};
-    for (auto conj: cp) {
-        if (conj.size() == k) {
-            res.push_back(conj);
+        return res;
+    } else if (k >= end - begin + 1) {
+        ubicaciones proveedurias;
+        for (int i = begin; i <= end; ++i) {
+            proveedurias.push_back(puestos[i]);
+        }
+
+        choripanesRes res = {.coste = 0, .proveedurias = proveedurias};
+        memory[begin][end][k] = res;
+
+        return res;
+    } else if (k == 1) {
+        int mid = ((end - begin + 1) / 2) - ((end - begin + 1) % 2 == 0 ? 1 : 0);
+        ubicaciones nuevosPuestos = {};
+        ubicaciones proveedurias = {puestos[begin + mid]};
+
+        for (int i = begin; i <= end; ++i) {
+            nuevosPuestos.push_back(puestos[i]);
+        }
+        choripanesRes res = {.coste = coste(nuevosPuestos, proveedurias), .proveedurias = proveedurias};
+
+        memory[begin][end][k] = res;
+
+        return res;
+    }
+
+    int min = numeric_limits<int>::max();
+    ubicaciones minUbi;
+
+    for (int m = 0; m <= end - begin; ++m) {
+        choripanesRes r1, r2;
+        r1 = choripanesV3(puestos, k - 1, begin, end - m, memory);
+        r2 = choripanesV3(puestos, 1, end - m + 1, end, memory);
+
+        int posibleMinCoste = r1.coste + r2.coste;
+        bool esMenorLexicograficamente = false;
+
+        if (posibleMinCoste == min) {
+            esMenorLexicograficamente = true;
+            for (int i = 0; i < minUbi.size(); ++i) {
+                if (i == minUbi.size() - 1) {
+                    esMenorLexicograficamente = esMenorLexicograficamente && r2.proveedurias[0] <= minUbi[i];
+                } else {
+                    esMenorLexicograficamente = esMenorLexicograficamente && r1.proveedurias[i] <= minUbi[i];
+                }
+            }
+
+        } else if (posibleMinCoste < min) {
+            esMenorLexicograficamente = true;
+        }
+
+        if (esMenorLexicograficamente) {
+            minUbi.clear();
+            min = r1.coste + r2.coste;
+            minUbi.reserve(r1.proveedurias.size() + r2.proveedurias.size());
+            minUbi.insert(minUbi.end(), r1.proveedurias.begin(), r1.proveedurias.end());
+            minUbi.insert(minUbi.end(), r2.proveedurias.begin(), r2.proveedurias.end());
         }
     }
+
+    choripanesRes res = {.coste = min, .proveedurias = minUbi};
+    memory[begin][end][k] = res;
 
     return res;
-};
+}
 
-choripanesRes choripanes(ubicaciones puestos, int cantProveedurias) {
-    vector<vector<int>> proveedurias = conjuntoDePartesN(puestos, cantProveedurias);
-    ubicaciones resProveedurias = proveedurias[0];
-    int resCoste = coste(puestos, proveedurias[0]);
+choripanesRes choripanesDP(ubicaciones puestos, int cantProveedurias) {
+    memo memory(puestos.size() + 1);
+    choripanesRes def = {.coste = -1, .proveedurias = {}};
+    vector<choripanesRes> defFila(cantProveedurias + 1, def);
+    vector<vector<choripanesRes>> defC(puestos.size() + 1, defFila);
 
-    for (int i = proveedurias.size() - 1; i < proveedurias.size(); i--) {
-        vector<int> distProveeduria = proveedurias[i];
-
-        int costePuesto = coste(puestos, distProveeduria);
-        if (costePuesto < resCoste) {
-            resCoste = costePuesto;
-            resProveedurias = distProveeduria;
-        }
+    for (int i = 0; i <= puestos.size(); ++i) {
+        memory[i] = defC;
     }
 
-    return {
-            .coste = resCoste,
-            .proveedurias = resProveedurias
-    };
-};
+    choripanesRes res = choripanesV3(puestos, cantProveedurias, 0, puestos.size() - 1, memory);
+
+    return res;
+}
 
 void init() {
     int tests;
@@ -102,7 +151,7 @@ void init() {
             p.push_back(temp);
         };
 
-        choripanesRes res = choripanes(p, k);
+        choripanesRes res = choripanesDP(p, k);
         cout << res.coste << endl;
         for (int i = 0; i < res.proveedurias.size(); i++) {
             int proveduria = res.proveedurias[i];
